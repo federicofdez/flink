@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.flink.streaming.connectors.smartsantander;
 
 import com.google.gson.*;
@@ -64,7 +82,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 	 */
 	SmartSantanderObservationStream(Class<T[]> observationsArrayClass, SmartSantanderAPIEndpoints endpoint, int updateFrequency) {
 		CloseableHttpClient client = HttpClients.createDefault();
-		HttpGet request = null;
+		HttpGet request;
 		try {
 			URIBuilder builder = new URIBuilder(endpoint.getUrl());
 			builder.setParameter("sort", "asc");
@@ -116,6 +134,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 	 * @return the response parsed as plain text
 	 */
 	public String retrieveRawData() {
+		StringBuilder responseBodyBuilder = new StringBuilder();
 		String responseBody = "";
 		try {
 			HttpResponse response = this.getClient().execute(this.getRequest());
@@ -123,12 +142,12 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 			if (status >= 200 && status < 300) {
 				BufferedReader br;
 				br = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-				String line = "";
+				String line;
 				while ((line = br.readLine()) != null) {
-					responseBody += line + "\n";
+					responseBodyBuilder.append(line + "\n");
 				}
-				responseBody = responseBody.substring(0,
-					responseBody.lastIndexOf("\n")); // remove last blank line
+				responseBody = responseBodyBuilder.toString();
+				responseBody.substring(0, responseBody.lastIndexOf("\n")); // remove last blank line
 
 			} else {
 				System.out.println("Unexpected response status: " + status);
@@ -162,7 +181,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 			int sensorID = observation.getSensorID();
 			String timestamp = observation.getTimestamp();
 
-			if (this.getLastModified().get(sensorID).compareTo(timestamp) != -1)
+			if (this.getLastModified().get(sensorID).compareTo(timestamp) > -1)
 				continue; // skip old or repeated values
 			if (!this.getObservations().offer(observation))
 				break; // queue is full!
@@ -175,11 +194,11 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 	 * Create thread and execute requests in the background
 	 */
 	public void connect() {
-		Runnable task = () -> {
-			retrieveData();
-		};
+		Runnable task = this::retrieveData;
 		executor.scheduleWithFixedDelay(task, 0, getUpdateFrequency(), TimeUnit.SECONDS);
 	}
+
+
 
 	/**
 	 * Kill all running threads and disconnect
