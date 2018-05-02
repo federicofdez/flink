@@ -21,9 +21,7 @@ package org.apache.flink.streaming.connectors.smartsantander.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Observation from magnetic sensors that measure traffic
- *
- * @author federicofdez
+ * Observation from magnetic sensors that measure traffic.
  */
 public class TrafficObservation implements SmartSantanderObservation {
 
@@ -34,17 +32,17 @@ public class TrafficObservation implements SmartSantanderObservation {
 	private final String timestamp;
 
 	/**
-	 * Time percentage that the transit loop is occupied by a vehicle
+	 * Time percentage that the transit loop is occupied by a vehicle.
 	 */
 	@SerializedName("ayto:ocupacion")
 	private final int occupation;
 	/**
-	 * Number of counted vehicles, expanded to vehicles per hour (vph)
+	 * Number of counted vehicles, expanded to vehicles per hour (vph).
 	 */
 	@SerializedName("ayto:intensidad")
 	private final int intensity;
 	/**
-	 * Estimation of congestion based on occupation and intensity (on a 100-basis)
+	 * Estimation of congestion based on occupation and intensity (on a 100-basis).
 	 */
 	@SerializedName("ayto:carga")
 	private final int charge;

@@ -18,8 +18,13 @@
 
 package org.apache.flink.streaming.connectors.smartsantander;
 
-import com.google.gson.*;
 import org.apache.flink.streaming.connectors.smartsantander.model.SmartSantanderObservation;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -32,48 +37,50 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Handles background connections to HTTP API and serializes JSON response into POJOs
- * defined in the model
- *
- * @author federicofdez
+ * defined in the model.
  */
 public class SmartSantanderObservationStream<T extends SmartSantanderObservation> implements AutoCloseable {
 
 	/**
-	 * HTTP client is reused for all API calls
+	 * HTTP client is reused for all API calls.
 	 */
 	private final CloseableHttpClient client;
 	/**
-	 * Request object is reused for all API calls
+	 * Request object is reused for all API calls.
 	 */
 	private final HttpGet request;
 	/**
-	 * Type of the observations array, necessary to perform deserialization
+	 * Type of the observations array, necessary to perform deserialization.
 	 */
 	private final Class<T[]> observationsArrayClass;
 	/**
-	 * Bounded queue of observations
+	 * Bounded queue of observations.
 	 */
 	private final BlockingQueue<T> observations = new ArrayBlockingQueue<>(500);
 	/**
-	 * Frequency of updates expressed in seconds
+	 * Frequency of updates expressed in seconds.
 	 */
 	private final int updateFrequency;
 	/**
-	 * Task executor for making requests in separate thread
+	 * Task executor for making requests in separate thread.
 	 */
 	private final ScheduledExecutorService executor;
 	/**
-	 * Key-value pairs storing the date of the last retrieved data for each sensor
+	 * Key-value pairs storing the date of the last retrieved data for each sensor.
 	 */
 	private final HashMap<Integer, String> lastModified;
 
 
 	/**
-	 * Creates a source that periodically reads from the API and stores data in a FIFO queue
+	 * Creates a source that periodically reads from the API and stores data in a FIFO queue.
 	 *
 	 * @param observationsArrayClass class associated to an array of observation objects
 	 *                               (e.g.TrafficObservation[].class)
@@ -129,7 +136,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 	}
 
 	/**
-	 * Makes HTTP request to the specified endpoint
+	 * Makes HTTP request to the specified endpoint.
 	 *
 	 * @return the response parsed as plain text
 	 */
@@ -159,7 +166,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 	}
 
 	/**
-	 * Get the deserialized response and store it in the queue
+	 * Get the deserialized response and store it in the queue.
 	 */
 	public void retrieveData() {
 		String rawData = this.retrieveRawData();
@@ -181,17 +188,19 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 			int sensorID = observation.getSensorID();
 			String timestamp = observation.getTimestamp();
 
-			if (this.getLastModified().get(sensorID).compareTo(timestamp) > -1)
+			if (this.getLastModified().get(sensorID).compareTo(timestamp) > -1) {
 				continue; // skip old or repeated values
-			if (!this.getObservations().offer(observation))
+			}
+			if (!this.getObservations().offer(observation)) {
 				break; // queue is full!
+			}
 
 			this.getLastModified().put(sensorID, timestamp);
 		}
 	}
 
 	/**
-	 * Create thread and execute requests in the background
+	 * Create thread and execute requests in the background.
 	 */
 	public void connect() {
 		Runnable task = this::retrieveData;
@@ -201,7 +210,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 
 
 	/**
-	 * Kill all running threads and disconnect
+	 * Kill all running threads and disconnect.
 	 */
 	@Override
 	public void close() {

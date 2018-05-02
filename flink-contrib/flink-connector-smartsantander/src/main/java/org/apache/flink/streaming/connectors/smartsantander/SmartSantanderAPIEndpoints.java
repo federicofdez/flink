@@ -19,9 +19,7 @@
 package org.apache.flink.streaming.connectors.smartsantander;
 
 /**
- * URIs of the resources in Smart Santander API
- *
- * @author federicofdez
+ * URIs of the resources in Smart Santander API.
  */
 public enum SmartSantanderAPIEndpoints {
 	TRAFFIC("http://datos.santander.es/api/rest/datasets/mediciones"),

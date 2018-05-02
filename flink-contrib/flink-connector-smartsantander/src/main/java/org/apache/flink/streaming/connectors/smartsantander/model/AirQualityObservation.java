@@ -21,9 +21,7 @@ package org.apache.flink.streaming.connectors.smartsantander.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Observation from mobile sensors that measure different gas levels in air
- *
- * @author federicofdez
+ * Observation from mobile sensors that measure different gas levels in air.
  */
 public class AirQualityObservation implements SmartSantanderObservation {
 
@@ -38,22 +36,22 @@ public class AirQualityObservation implements SmartSantanderObservation {
 	private double longitude;
 
 	/**
-	 * Level of NO2 expressed in ug/m3
+	 * Level of NO2 expressed in ug/m3.
 	 */
 	@SerializedName("ayto:NO2")
-	private double NO2Level;
+	private double levelOfNO2;
 	/**
-	 * Level of CO expressed in mg/m3
+	 * Level of CO expressed in mg/m3.
 	 */
 	@SerializedName("ayto:CO")
-	private double COLevel;
+	private double levelofCO;
 	/**
-	 * Level of ozone expressed in ug/m3
+	 * Level of ozone expressed in ug/m3.
 	 */
 	@SerializedName("ayto:ozone")
-	private double ozoneLevel;
+	private double levelOfOzone;
 	/**
-	 * Measured temperature, expressed in degrees Celsius (ºC)
+	 * Measured temperature, expressed in degrees Celsius (ºC).
 	 */
 	@SerializedName("ayto:temperature")
 	private double temperature;
@@ -62,14 +60,14 @@ public class AirQualityObservation implements SmartSantanderObservation {
 		this(0, null, 0, 0, 0, 0, 0, 0);
 	}
 
-	public AirQualityObservation(int sensorID, String timestamp, double latitude, double longitude, double NO2Level, double COLevel, double ozoneLevel, double temperature) {
+	public AirQualityObservation(int sensorID, String timestamp, double latitude, double longitude, double levelOfNO2, double levelOfCO, double levelOfOzone, double temperature) {
 		this.sensorID = sensorID;
 		this.timestamp = timestamp;
 		this.latitude = latitude;
 		this.longitude = longitude;
-		this.NO2Level = NO2Level;
-		this.COLevel = COLevel;
-		this.ozoneLevel = ozoneLevel;
+		this.levelOfNO2 = levelOfNO2;
+		this.levelofCO = levelOfCO;
+		this.levelOfOzone = levelOfOzone;
 		this.temperature = temperature;
 	}
 
@@ -107,28 +105,28 @@ public class AirQualityObservation implements SmartSantanderObservation {
 		this.longitude = longitude;
 	}
 
-	public double getNO2Level() {
-		return NO2Level;
+	public double getLevelOfNO2() {
+		return levelOfNO2;
 	}
 
-	public void setNO2Level(double NO2Level) {
-		this.NO2Level = NO2Level;
+	public void setLevelOfNO2(double levelOfNO2) {
+		this.levelOfNO2 = levelOfNO2;
 	}
 
-	public double getCOLevel() {
-		return COLevel;
+	public double getLevelofCO() {
+		return levelofCO;
 	}
 
-	public void setCOLevel(double COLevel) {
-		this.COLevel = COLevel;
+	public void setLevelofCO(double levelofCO) {
+		this.levelofCO = levelofCO;
 	}
 
-	public double getOzoneLevel() {
-		return ozoneLevel;
+	public double getLevelOfOzone() {
+		return levelOfOzone;
 	}
 
-	public void setOzoneLevel(double ozoneLevel) {
-		this.ozoneLevel = ozoneLevel;
+	public void setLevelOfOzone(double levelOfOzone) {
+		this.levelOfOzone = levelOfOzone;
 	}
 
 	public double getTemperature() {

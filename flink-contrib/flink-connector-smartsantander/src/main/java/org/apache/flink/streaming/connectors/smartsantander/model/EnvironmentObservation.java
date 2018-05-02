@@ -21,9 +21,7 @@ package org.apache.flink.streaming.connectors.smartsantander.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Observation from fixed sensors that measure different parameters in the environment
- *
- * @author federicofdez
+ * Observation from fixed sensors that measure different parameters in the environment.
  */
 public class EnvironmentObservation implements SmartSantanderObservation {
 
@@ -38,18 +36,18 @@ public class EnvironmentObservation implements SmartSantanderObservation {
 	private double longitude;
 
 	/**
-	 * Measured noise expressed in DB
+	 * Measured noise expressed in DB.
 	 */
 	@SerializedName("ayto:noise")
 	private double noise;
 	/**
-	 * Measured temperature, expressed in degrees Celsius (ºC)
+	 * Measured temperature, expressed in degrees Celsius (ºC).
 	 */
 	@SerializedName("ayto:temperature")
 	private double temperature;
 
 	/**
-	 * Measured light intensity, expressed in lumens (lm)
+	 * Measured light intensity, expressed in lumens (lm).
 	 */
 	@SerializedName("ayto:light")
 	private double lightIntesity;

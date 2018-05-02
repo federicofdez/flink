@@ -25,22 +25,20 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Data source that can be used in Flink jobs and retrieves data from the sensors deployed
- * in Smart Santander
- *
- * @author federicofdez
+ * in Smart Santander.
  */
 public class SmartSantanderSource<T extends SmartSantanderObservation> extends RichSourceFunction<T> {
 
 	/**
-	 * Endpoint of the API
+	 * Endpoint of the API.
 	 */
 	private final SmartSantanderAPIEndpoints endpoint;
 	/**
-	 * Frequency of updates expressed in seconds
+	 * Frequency of updates expressed in seconds.
 	 */
 	private final int updateFrequency;
 	/**
-	 * Type of the observations array, necessary to perform deserialization
+	 * Type of the observations array, necessary to perform deserialization.
 	 */
 	private final Class<T[]> observationsArrayClass;
 
@@ -62,8 +60,9 @@ public class SmartSantanderSource<T extends SmartSantanderObservation> extends R
 				// Query for the next observation event
 				T event = stream.getObservations().poll(100, TimeUnit.MILLISECONDS);
 
-				if (event != null)
+				if (event != null) {
 					ctx.collect(event);
+				}
 			}
 		}
 	}
