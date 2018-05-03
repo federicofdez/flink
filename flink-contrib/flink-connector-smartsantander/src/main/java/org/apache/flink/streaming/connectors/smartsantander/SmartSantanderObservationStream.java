@@ -188,7 +188,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 			int sensorID = observation.getSensorID();
 			String timestamp = observation.getTimestamp();
 
-			if (this.getLastModified().get(sensorID).compareTo(timestamp) > -1) {
+			if (this.getLastModified().containsKey(sensorID) && this.getLastModified().get(sensorID).compareTo(timestamp) > -1) {
 				continue; // skip old or repeated values
 			}
 			if (!this.getObservations().offer(observation)) {
