@@ -18,12 +18,11 @@
 
 package org.apache.flink.streaming.connectors.smartsantander.model;
 
-import com.google.gson.annotations.SerializedName;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 
 /**
@@ -32,70 +31,97 @@ import java.io.Reader;
 public class TrafficObservation implements SmartSantanderObservation {
 
 	// metadata
-	@SerializedName("ayto:idSensor")
-	private final int sensorID;
-	@SerializedName("dc:modified")
-	private final String timestamp;
+	private int sensorID;
+	private String timestamp;
 	private double latitude;
 	private double longitude;
 
 	/**
 	 * Time percentage that the transit loop is occupied by a vehicle.
 	 */
-	@SerializedName("ayto:ocupacion")
-	private final int occupation;
+	private int occupation;
 	/**
 	 * Number of counted vehicles, expanded to vehicles per hour (vph).
 	 */
-	@SerializedName("ayto:intensidad")
-	private final int intensity;
+	private int intensity;
 	/**
 	 * Estimation of congestion based on occupation and intensity (on a 100-basis).
 	 */
-	@SerializedName("ayto:carga")
-	private final int charge;
+	private int charge;
 
-	public TrafficObservation() {
-		this(null, 0, 0, 0, 0);
-	}
-
-	public TrafficObservation(String timestamp, int sensorID, int occupation, int intensity, int charge) {
-		this.timestamp = timestamp;
+	public TrafficObservation(int sensorID, String timestamp, int occupation, int intensity, int charge) {
 		this.sensorID = sensorID;
+		this.timestamp = timestamp;
 		this.occupation = occupation;
 		this.intensity = intensity;
 		this.charge = charge;
+
 		double[] coordinates = findCoordinates(sensorID);
 		this.latitude = coordinates[0];
 		this.longitude = coordinates[1];
 	}
 
+	@Override
 	public int getSensorID() {
 		return sensorID;
 	}
 
+	public void setSensorID(int sensorID) {
+		this.sensorID = sensorID;
+		double[] coordinates = findCoordinates(sensorID);
+		this.latitude = coordinates[0];
+		this.longitude = coordinates[1];
+	}
+
+	@Override
 	public String getTimestamp() {
 		return timestamp;
+	}
+
+	public void setTimestamp(String timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	@Override
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	@Override
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 
 	public int getOccupation() {
 		return occupation;
 	}
 
+	public void setOccupation(int occupation) {
+		this.occupation = occupation;
+	}
+
 	public int getIntensity() {
 		return intensity;
+	}
+
+	public void setIntensity(int intensity) {
+		this.intensity = intensity;
 	}
 
 	public int getCharge() {
 		return charge;
 	}
 
-	public double getLatitude() {
-		return latitude;
-	}
-
-	public double getLongitude() {
-		return longitude;
+	public void setCharge(int charge) {
+		this.charge = charge;
 	}
 
 	public static double[] findCoordinates(int sensorID) {
@@ -103,7 +129,7 @@ public class TrafficObservation implements SmartSantanderObservation {
 		Iterable<CSVRecord> records = null;
 		try {
 			ClassLoader classLoader = TrafficObservation.class.getClassLoader();
-			in = new FileReader(classLoader.getResource("trafficSensorsLocation.csv").getFile());
+			in = new InputStreamReader(classLoader.getResourceAsStream("trafficSensorsLocation.csv"));
 			records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -121,4 +147,5 @@ public class TrafficObservation implements SmartSantanderObservation {
 
 		return coordinates;
 	}
+
 }

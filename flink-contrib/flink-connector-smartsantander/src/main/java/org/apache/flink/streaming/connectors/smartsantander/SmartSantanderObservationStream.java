@@ -23,8 +23,13 @@ import org.apache.flink.streaming.connectors.smartsantander.model.SmartSantander
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+
+import org.apache.flink.streaming.connectors.smartsantander.model.TrafficObservation;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -35,6 +40,7 @@ import org.apache.http.impl.client.HttpClients;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -171,7 +177,12 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 	public void retrieveData() {
 		String rawData = this.retrieveRawData();
 
-		Gson gson = new GsonBuilder().create();
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(
+				TrafficObservation.class,
+				new TrafficObservationDeserializer());
+		Gson gson = gsonBuilder.create();
+
 		// create JSON with the whole reply
 		JsonObject jsonObject = gson.fromJson(rawData, JsonElement.class).getAsJsonObject();
 
@@ -228,4 +239,24 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 			}
 		}
 	}
+
+	/**
+	 * 	TrafficObservation requires a custom deserializer to compute latitude and longitude
+	 */
+	public class TrafficObservationDeserializer implements JsonDeserializer<TrafficObservation> {
+		@Override
+		public TrafficObservation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+			return new TrafficObservation(
+					jsonObject.get("ayto:idSensor").getAsInt(),
+					jsonObject.get("dc:modified").getAsString(),
+					jsonObject.get("ayto:ocupacion").getAsInt(),
+					jsonObject.get("ayto:intensidad").getAsInt(),
+					jsonObject.get("ayto:carga").getAsInt()
+			);
+
+		}
+	}
+
 }
