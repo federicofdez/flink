@@ -38,4 +38,18 @@ public interface SmartSantanderObservation {
 	 */
 	String getTimestamp();
 
+	/**
+	 * Get the latitude associated to the observation.
+	 *
+	 * @return Latitude expressed in degrees
+	 */
+	double getLatitude();
+
+	/**
+	 * Get the longitude associated to the observation.
+	 *
+	 * @return Longitude expressed in degrees
+	 */
+	double getLongitude();
+
 }

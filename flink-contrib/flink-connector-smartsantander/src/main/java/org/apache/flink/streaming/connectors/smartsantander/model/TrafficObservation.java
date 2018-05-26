@@ -19,6 +19,12 @@
 package org.apache.flink.streaming.connectors.smartsantander.model;
 
 import com.google.gson.annotations.SerializedName;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Observation from magnetic sensors that measure traffic.
@@ -30,6 +36,8 @@ public class TrafficObservation implements SmartSantanderObservation {
 	private final int sensorID;
 	@SerializedName("dc:modified")
 	private final String timestamp;
+	private double latitude;
+	private double longitude;
 
 	/**
 	 * Time percentage that the transit loop is occupied by a vehicle.
@@ -57,6 +65,9 @@ public class TrafficObservation implements SmartSantanderObservation {
 		this.occupation = occupation;
 		this.intensity = intensity;
 		this.charge = charge;
+		double[] coordinates = findCoordinates(sensorID);
+		this.latitude = coordinates[0];
+		this.longitude = coordinates[1];
 	}
 
 	public int getSensorID() {
@@ -77,5 +88,37 @@ public class TrafficObservation implements SmartSantanderObservation {
 
 	public int getCharge() {
 		return charge;
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public static double[] findCoordinates(int sensorID) {
+		Reader in = null;
+		Iterable<CSVRecord> records = null;
+		try {
+			ClassLoader classLoader = TrafficObservation.class.getClassLoader();
+			in = new FileReader(classLoader.getResource("trafficSensorsLocation.csv").getFile());
+			records = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		double[] coordinates = new double[2];
+		for (CSVRecord record : records) {
+			if (Integer.valueOf(record.get("sensorID")) != sensorID) {
+				continue;
+			}
+			coordinates[0] = Double.valueOf(record.get("latitude"));
+			coordinates[1] = Double.valueOf(record.get("longitude"));
+			break;
+		}
+
+		return coordinates;
 	}
 }
