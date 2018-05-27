@@ -19,8 +19,10 @@
 package org.apache.flink.streaming.connectors.smartsantander;
 
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
+import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.connectors.smartsantander.model.SmartSantanderObservation;
 
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -61,7 +63,9 @@ public class SmartSantanderSource<T extends SmartSantanderObservation> extends R
 				T event = stream.getObservations().poll(100, TimeUnit.MILLISECONDS);
 
 				if (event != null) {
-					ctx.collect(event);
+					long timestamp = Instant.parse(event.getTimestamp()).toEpochMilli();
+					ctx.collectWithTimestamp(event, timestamp);
+					ctx.emitWatermark(new Watermark(timestamp));
 				}
 			}
 		}
