@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
+import java.sql.SQLOutput;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -160,7 +161,8 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 					responseBodyBuilder.append(line + "\n");
 				}
 				responseBody = responseBodyBuilder.toString();
-				responseBody.substring(0, responseBody.lastIndexOf("\n")); // remove last blank line
+				//responseBody = responseBody.substring(0, responseBody.lastIndexOf("\n")); // remove last blank line
+				responseBody = responseBody.replace("\"\"", "\"0\"");
 
 			} else {
 				System.out.println("Unexpected response status: " + status);
@@ -168,6 +170,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 		} catch (IOException | UnsupportedOperationException e) {
 			e.printStackTrace();
 		}
+
 		return responseBody;
 	}
 
@@ -243,7 +246,7 @@ public class SmartSantanderObservationStream<T extends SmartSantanderObservation
 	/**
 	 * 	TrafficObservation requires a custom deserializer to compute latitude and longitude
 	 */
-	public class TrafficObservationDeserializer implements JsonDeserializer<TrafficObservation> {
+	private class TrafficObservationDeserializer implements JsonDeserializer<TrafficObservation> {
 		@Override
 		public TrafficObservation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();

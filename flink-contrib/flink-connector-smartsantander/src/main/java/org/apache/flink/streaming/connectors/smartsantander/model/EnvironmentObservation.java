@@ -50,20 +50,20 @@ public class EnvironmentObservation implements SmartSantanderObservation {
 	 * Measured light intensity, expressed in lumens (lm).
 	 */
 	@SerializedName("ayto:light")
-	private double lightIntesity;
+	private double lightIntensity;
 
 	public EnvironmentObservation() {
 		this(0, null, 0, 0, 0, 0, 0);
 	}
 
-	public EnvironmentObservation(int sensorID, String timestamp, double latitude, double longitude, double noise, double temperature, double lightIntesity) {
+	public EnvironmentObservation(int sensorID, String timestamp, double latitude, double longitude, double noise, double temperature, double lightIntensity) {
 		this.sensorID = sensorID;
 		this.timestamp = timestamp;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.noise = noise;
 		this.temperature = temperature;
-		this.lightIntesity = lightIntesity;
+		this.lightIntensity = lightIntensity;
 	}
 
 	@Override
@@ -116,11 +116,11 @@ public class EnvironmentObservation implements SmartSantanderObservation {
 		this.temperature = temperature;
 	}
 
-	public double getLightIntesity() {
-		return lightIntesity;
+	public double getLightIntensity() {
+		return lightIntensity;
 	}
 
-	public void setLightIntesity(double lightIntesity) {
-		this.lightIntesity = lightIntesity;
+	public void setLightIntensity(double lightIntensity) {
+		this.lightIntensity = lightIntensity;
 	}
 }
