@@ -24,6 +24,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.Objects;
 
 /**
  * Observation from magnetic sensors that measure traffic.
@@ -148,4 +149,34 @@ public class TrafficObservation implements SmartSantanderObservation {
 		return coordinates;
 	}
 
+	@Override
+	public String toString() {
+		return "TrafficObservation: (sensorID = " + this.getSensorID() + "), " +
+				"(location = " + this.getLatitude() + ", " + this.getLongitude() + "), " +
+				"(timestamp = " + this.getTimestamp() + "), " +
+				"(charge = " + this.getCharge() + "), " +
+				"(occupation = " + this.getOccupation() + "), " +
+				"(intensity = " + this.getIntensity() + ")";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(sensorID, timestamp, latitude, longitude, occupation, intensity, charge);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) return true;
+		if (!(o instanceof TrafficObservation)) {
+			return false;
+		}
+		TrafficObservation other = (TrafficObservation)o;
+		return this.getSensorID() == other.getSensorID() &&
+				Objects.equals(this.getTimestamp(), other.getTimestamp()) &&
+				this.getLatitude() == other.getLatitude() &&
+				this.getLongitude() == other.getLongitude() &&
+				this.getOccupation() == other.getOccupation() &&
+				this.getIntensity() == other.getIntensity() &&
+				this.getCharge() == other.getCharge();
+	}
 }

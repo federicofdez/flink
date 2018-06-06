@@ -20,6 +20,8 @@ package org.apache.flink.streaming.connectors.smartsantander.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 /**
  * Observation from mobile sensors that measure different gas levels in air.
  */
@@ -135,5 +137,38 @@ public class AirQualityObservation implements SmartSantanderObservation {
 
 	public void setTemperature(double temperature) {
 		this.temperature = temperature;
+	}
+
+	@Override
+	public String toString() {
+		return "AirQualityObservation: (sensorID = " + this.getSensorID() + "), " +
+				"(location = " + this.getLatitude() + ", " + this.getLongitude() + "), " +
+				"(timestamp = " + this.getTimestamp() + "), " +
+				"(temperature = " + this.getTemperature() + "), " +
+				"(NO2 = " + this.getLevelOfNO2() + "), " +
+				"(CO = " + this.getLevelofCO() + "), " +
+				"(Ozone = " + this.getLevelOfOzone() + ")";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(sensorID, timestamp, latitude, longitude, levelOfNO2, levelofCO, levelOfOzone, temperature);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) return true;
+		if (!(o instanceof AirQualityObservation)) {
+			return false;
+		}
+		AirQualityObservation other = (AirQualityObservation) o;
+		return this.getSensorID() == other.getSensorID() &&
+				Objects.equals(this.getTimestamp(), other.getTimestamp()) &&
+				this.getLatitude() == other.getLatitude() &&
+				this.getLongitude() == other.getLongitude() &&
+				this.getTemperature() == other.getTemperature() &&
+				this.getLevelOfNO2() == other.getLevelOfNO2() &&
+				this.getLevelofCO() == other.getLevelofCO() &&
+				this.getLevelOfOzone() == other.getLevelOfOzone();
 	}
 }

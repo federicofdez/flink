@@ -60,12 +60,10 @@ public class SmartSantanderSource<T extends SmartSantanderObservation> extends R
 
 			while (isRunning) {
 				// Query for the next observation event
-				T event = stream.getObservations().poll(100, TimeUnit.MILLISECONDS);
+				T event = stream.getObservations().poll(1, TimeUnit.SECONDS);
 
 				if (event != null) {
-					long timestamp = Instant.parse(event.getTimestamp()).toEpochMilli();
-					ctx.collectWithTimestamp(event, timestamp);
-					ctx.emitWatermark(new Watermark(timestamp));
+					ctx.collect(event);
 				}
 			}
 		}

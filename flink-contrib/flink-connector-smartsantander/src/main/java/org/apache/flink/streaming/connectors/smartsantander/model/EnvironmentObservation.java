@@ -20,6 +20,8 @@ package org.apache.flink.streaming.connectors.smartsantander.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 /**
  * Observation from fixed sensors that measure different parameters in the environment.
  */
@@ -122,5 +124,36 @@ public class EnvironmentObservation implements SmartSantanderObservation {
 
 	public void setLightIntensity(double lightIntensity) {
 		this.lightIntensity = lightIntensity;
+	}
+
+	@Override
+	public String toString() {
+		return "EnvironmentObservation: (sensorID = " + this.getSensorID() + "), " +
+				"(location = " + this.getLatitude() + ", " + this.getLongitude() + "), " +
+				"(timestamp = " + this.getTimestamp() + "), " +
+				"(noise = " + this.getNoise() + "), " +
+				"(temperature = " + this.getTemperature() + "), " +
+				"(lightIntensity = " + this.getLightIntensity() + ")";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(sensorID, timestamp, latitude, longitude, noise, temperature, lightIntensity);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) return true;
+		if (!(o instanceof EnvironmentObservation)) {
+			return false;
+		}
+		EnvironmentObservation other = (EnvironmentObservation)o;
+		return this.getSensorID() == other.getSensorID() &&
+				Objects.equals(this.getTimestamp(), other.getTimestamp()) &&
+				this.getLatitude() == other.getLatitude() &&
+				this.getLongitude() == other.getLongitude() &&
+				this.getNoise() == other.getNoise() &&
+				this.getTemperature() == other.getTemperature() &&
+				this.getLightIntensity() == other.getLightIntensity();
 	}
 }
